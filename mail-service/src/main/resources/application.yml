@@ -1,0 +1,13 @@
+spring:
+  mail:
+    default-encoding: UTF-8
+    host: smtp.gmail.com
+    username: cihandilsizdev@gmail.com
+    password: bifi vccz voqe shca
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

@@ -1,0 +1,31 @@
+server:
+  port: 9002
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    password: postgres
+    url: jdbc:postgresql://postgres-user:5432/user_db
+    username: postgres
+  jpa:
+    hibernate:
+    ddl-auto: create-drop
+  application:
+    name: user-service
+  zipkin:
+    base-url: http://zipkin:9411
+management:
+  endpoint:
+    web:
+      exposure:
+        include: "*"
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true
+jwt:
+  secret: "transmarketsecret"

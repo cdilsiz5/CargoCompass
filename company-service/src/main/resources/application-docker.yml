@@ -1,0 +1,28 @@
+server:
+  port: 9001
+spring:
+  application:
+    name: company-service
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    password: postgres
+    url: jdbc:postgresql://postgres-company:5432/company_db
+    username: postgres
+  jpa:
+    hibernate:
+    ddl-auto: create-drop
+    generate-ddl: true
+management:
+  endpoint:
+    web:
+      exposure:
+        include: "*"
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true

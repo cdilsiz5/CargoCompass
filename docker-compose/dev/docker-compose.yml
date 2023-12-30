@@ -1,0 +1,213 @@
+version: "3.8"
+
+services:
+  postgres-user:
+    image: postgres:15.2
+    container_name: postgres-user
+    restart: always
+    ports:
+      - "5431:5432"
+    networks:
+      - spring
+      - postgres
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  postgres-cargo:
+    image: postgres:15.2
+    container_name: postgres-cargo
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: cargo_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - spring
+      - postgres
+
+  postgres-company:
+    image: postgres:15.2
+    container_name: postgres-company
+    restart: always
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: company_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - spring
+      - postgres
+  postgres-offer:
+    image: postgres:15.2
+    container_name: postgres-offer
+    restart: always
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_DB: offer_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - spring
+      - postgres
+  postgres-vehicle:
+    image: postgres:15.2
+    container_name: postgres-vehicle
+    restart: always
+    ports:
+      - "5436:5432"
+    environment:
+      POSTGRES_DB: vehicle_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - spring
+      - postgres
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - spring
+
+  eureka-server:
+    image: cihandsz/eureka-server
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    networks:
+      - spring
+
+  api-gateway:
+    image: cihandsz/api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eureka-server:8761/eureka/"
+    networks:
+      - spring
+    depends_on:
+      - eureka-server
+
+  user-service:
+    image: "cihandsz/user-service"
+    container_name: user-service
+    ports:
+      - "9002:9002"
+    depends_on:
+      - postgres-user
+      - eureka-server
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - spring
+      - postgres
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+
+  cargo-service:
+    image: "cihandsz/cargo-service"
+    container_name: cargo-service
+    ports:
+      - "9000:9000"
+    depends_on:
+      - postgres-cargo
+      - eureka-server
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - spring
+      - postgres
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+  company-service:
+    image: "cihandsz/company-service"
+    container_name: company-service
+    ports:
+      - "9001:9001"
+    depends_on:
+      - postgres-cargo
+      - eureka-server
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - spring
+      - postgres
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+  offer-service:
+    image: "cihandsz/offer-service"
+    container_name: offer-service
+    ports:
+      - "9003:9003"
+    depends_on:
+      - postgres-cargo
+      - eureka-server
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - spring
+      - postgres
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+  vehicle-service:
+    image: "cihandsz/vehicle-service"
+    container_name: vehicle-service
+    ports:
+      - "9004:9004"
+    depends_on:
+      - postgres-cargo
+      - eureka-server
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - spring
+      - postgres
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+networks:
+  postgres:
+    driver: bridge
+  spring:
+    driver: bridge
+
+volumes:
+  postgres:
+  pgadmin:

@@ -1,0 +1,31 @@
+server:
+  port: 9003
+spring:
+  application:
+    name: offer-service
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    password: postgres
+    url: jdbc:postgresql://localhost:5435/offer_db
+    username: postgres
+  jpa:
+    hibernate:
+    ddl-auto: update
+    show-sql: true
+    generate-ddl: true
+  zipkin:
+    base-url: http://zipkin:9411
+management:
+  endpoint:
+    web:
+      exposure:
+        include: "*"
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true

@@ -1,0 +1,62 @@
+services:
+  postgres-user:
+    image: postgres:15.2
+    container_name: postgres-user
+    restart: always
+    ports:
+      - "5431:5432"
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+  rabbitmq:
+    image: rabbitmq:3.9.11-management-alpine
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    networks:
+      - transmarket
+  config-server:
+    image: "cihandsz/config-server"
+    container_name: config-server-ms
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "8071:8071"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - transmarket
+  user-service:
+    image: "cihandsz/user-service"
+    container_name: user-service-ms
+    ports:
+      - "9002:9002"
+    depends_on:
+      - config-server
+      - postgres-user
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+      - transmarket
+    environment:
+      SPRING_APPLICATION_NAME: "user-service"
+      SPRING_CONFIG_IMPORT: "configserver:http://configserver:8071/"
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres-user:5432/user_db"
+
+networks:
+  transmarket:
+    driver: bridge
