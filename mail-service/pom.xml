@@ -7,7 +7,6 @@
 		<artifactId>CargoCompass</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<groupId>com.cargocompass.app</groupId>
 	<artifactId>mail-service</artifactId>
 	<packaging>jar</packaging>
 	<name>mail-service</name>
