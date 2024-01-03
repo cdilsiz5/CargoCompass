@@ -37,7 +37,7 @@ TransMarket is an innovative platform transforming the freight transportation in
 1. Navigate to the project directory:
 
     ```
-    cd TransMarket
+    cd CargoCompass
     ```
 
 2. Build the Docker images:
@@ -57,7 +57,7 @@ TransMarket is an innovative platform transforming the freight transportation in
 1. Navigate to the project directory:
 
     ```
-    cd TransMarket
+    cd CargoCompass
     ```
 
 2. Run the application:
